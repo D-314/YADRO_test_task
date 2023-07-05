@@ -1,9 +1,13 @@
 #include <iostream>
+#include <iomanip>
+
 #include <vector>
 #include <complex>
 #include <random>
 #include <cmath>
+
 #include <ctime>
+
 #include "../QAM_lib/inc/qammodulator.h"
 #include "../QAM_lib/inc/awgn.h"
 #include "../QAM_lib/inc/qamdemodulator.h"
@@ -38,12 +42,14 @@ int main() {
     QAMDemodulator demodulator(ModIndex);  // Создаем демодулятор QAM с размером созвездия 16
 
     std::vector<double> BER, SNR;
-
-    for (int idx = 0; idx < 21; idx ++) {
-        SNR.push_back(idx);
-        awgn_channel.set_SNR_dB((double)idx);
+	
+	std::cout << std::setprecision(2) << std::fixed;
+	
+    for (double snr = 0; snr < 21; snr += 0.25) {
+        SNR.push_back(snr);
+        awgn_channel.set_SNR_dB(snr);
         int errors = 0; int  transmits = 0;
-        std::complex<double> noise = 0;
+        double noise = 0;
 
         while ((errors < 10000) && (transmits < 100000)) {
 
@@ -59,11 +65,11 @@ int main() {
             }
 
             for (unsigned int i = 0; i < 1; i++) {
-                noise += std::complex<double>((std::abs(noisy[i].real() - modulated[i].real())), (std::abs(noisy[i].imag() - modulated[i].imag())));
+                noise += std::abs(noisy[i] - modulated[i]);
             }
         }
 
-        noise = std::complex<double>(noise.real()/transmits, noise.imag()/transmits);
+        noise = noise/transmits;
 
         BER.push_back((float)errors/transmits);
 
