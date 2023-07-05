@@ -9,20 +9,20 @@ CONFIG += c++11
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 SOURCES += \
+    ../QAM_lib/src/awgn.cpp \
+    ../QAM_lib/src/qamdemodulator.cpp \
+    ../QAM_lib/src/qammodulator.cpp \
     QCustomPlot/qcustomplot.cpp \
-    awgn.cpp \
     main.cpp \
     mainwindow.cpp \
-    qamdemodulator.cpp \
-    qammodulator.cpp
 
 HEADERS += \
-    QAM.h \
+    ../QAM_lib/inc/QAM.h \
+    ../QAM_lib/inc/awgn.h \
+    ../QAM_lib/inc/qamdemodulator.h \
+    ../QAM_lib/inc/qammodulator.h \
     QCustomPlot/qcustomplot.h \
-    awgn.h \
     mainwindow.h \
-    qamdemodulator.h \
-    qammodulator.h
 
 FORMS += \
     mainwindow.ui

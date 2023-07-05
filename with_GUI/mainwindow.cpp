@@ -7,9 +7,9 @@
 #include <cmath>
 #include <ctime>
 #include <QCustomPlot/qcustomplot.h>
-#include "qammodulator.h"
-#include "awgn.h"
-#include "qamdemodulator.h"
+#include "../QAM_lib/inc/qammodulator.h"
+#include "../QAM_lib/inc/awgn.h"
+#include "../QAM_lib/inc/qamdemodulator.h"
 
 std::vector<bool> generateRandomBits(int N) {
     static int counter = 0;
@@ -74,9 +74,13 @@ void MainWindow::on_pushButton_clicked()
             std::vector<std::complex<double>> noisy = awgn_channel.addNoise(modulated);  // Добавление шума
             //std::vector<std::complex<double>> noisy = modulated;//awgn_channel.addNoise(modulated);  // Добавление шума
             std::vector<bool> demodulated = demodulator.demodulate(noisy);  // Демодуляция QAM
+
             for (unsigned int i = 0; i < bitsPerSymbol; i++) {
                 if (bits[i] != demodulated[i]) errors++;
-                noise += std::complex<double>(std::abs(noisy[i].real() - modulated[i].real()), std::abs(noisy[i].imag() - modulated[i].imag()));
+            }
+
+            for (unsigned int i = 0; i < 1; i++) {
+                noise += std::complex<double>((std::abs(noisy[i].real() - modulated[i].real())), (std::abs(noisy[i].imag() - modulated[i].imag())));
             }
         }
         noise = std::complex<double>(noise.real()/(bitsPerSymbol*transmits), noise.imag()/(bitsPerSymbol*transmits));
