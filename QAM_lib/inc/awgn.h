@@ -1,18 +1,24 @@
 #ifndef AWGN_H
 #define AWGN_H
+
 #include <vector>
 #include <complex>
 #include <iostream>
-#define SIGNAL_POWER_DB 0 //equal to 1 W
 
 class AWGN {
 private:
-    double variance;
+    long double sigma_noise;
 public:
-    AWGN() : variance(1) {};
-    AWGN(double SNR_dB) : variance(powf(10,(double)(SIGNAL_POWER_DB-SNR_dB)/10)*sqrt(2)/2) {};
-    void set_SNR_dB(double SNR_dB) {variance = powf(10,(double)(SIGNAL_POWER_DB-SNR_dB)/10)*sqrt(2)/2; std::cout << variance;};
+    AWGN():sigma_noise (1){};
+    AWGN(double SNR_dB);
+    AWGN(double Es, double SNR_dB);
+
+    void set_SNR_dB(double SNR_dB);
+    void set_SNR_dB(double Es, double SNR_dB);
+
     std::vector<std::complex<double>> addNoise(const std::vector<std::complex<double>>& constellation);
+private:
+    double SNR_dB_2_SNR_lin(double SNR_dB);
 };
 
 #endif // AWGN_H
