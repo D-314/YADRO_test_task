@@ -1,3 +1,6 @@
 [submodule "with_GUI/QCustomPlot"]
 	path = with_GUI/QCustomPlot
 	url = https://github.com/dbzhang800/QCustomPlot.git
+[submodule "without_GUI/asciichart"]
+	path = without_GUI/asciichart
+	url = https://github.com/Civitasv/asciichart.git

@@ -6,11 +6,11 @@
 #include <random>
 #include <cmath>
 
-#include <ctime>
-
 #include "../QAM_lib/inc/qammodulator.h"
 #include "../QAM_lib/inc/awgn.h"
 #include "../QAM_lib/inc/qamdemodulator.h"
+
+#include "asciichart/include/ascii/ascii.h"
 
 std::vector<bool> generateRandomBits(int N) {
     static int counter = 0;
@@ -35,7 +35,7 @@ std::vector<bool> generateRandomBits(int N) {
 }
 
 int main() {
-    unsigned int ModIndex = 64, bitsPerSymbol=log2(ModIndex);
+    unsigned int ModIndex = 16, bitsPerSymbol=log2(ModIndex);
 
     QAMModulator modulator(ModIndex);  // Создаем модулятор QAM с размером созвездия 16
     AWGN awgn_channel;
@@ -43,11 +43,14 @@ int main() {
 
     std::vector<double> BER, SNR;
 	
-	std::cout << std::setprecision(2) << std::fixed;
-	
+    std::cout << std::setprecision(4) << std::fixed;
+#ifdef DEBUG
+    std::cout << "!!!!!!!debug!!!!!!" << std::endl;
+#endif
+    std::cout << "SNR\tBER\terrors\tnoise_DB"<< std::endl;
     for (double snr = 0; snr < 21; snr += 0.25) {
         SNR.push_back(snr);
-        awgn_channel.set_SNR_dB(snr);
+        awgn_channel.set_SNR_dB(QAM(ModIndex).Es_fast(),snr);
         int errors = 0; int  transmits = 0;
         double noise = 0;
 
@@ -61,19 +64,34 @@ int main() {
             std::vector<bool> demodulated = demodulator.demodulate(noisy);  // Демодуляция QAM
 
             for (unsigned int i = 0; i < bitsPerSymbol; i++) {
-                if (bits[i] != demodulated[i]) errors++;
+                if (bits[i] != demodulated[i]) {
+                    errors++;
+                    #ifdef DEBUG
+                        std::cout << noisy[0] <<"\t" << modulated[0] <<"\n";
+                    #endif
+                }
+
             }
 
             for (unsigned int i = 0; i < 1; i++) {
-                noise += std::abs(noisy[i] - modulated[i]);
+                noise += (std::abs(noisy[i] - modulated[i]))*(std::abs(noisy[i] - modulated[i]));
             }
         }
+        double ber = log10((double)errors/transmits);
 
+        if (ber == - INFINITY) BER.push_back(floor(BER.back()));
+        else BER.push_back(ber);
+
+        for (int j = 0; j <= 13; j++) std::cout << "\033[A\033[2K";
+        ascii::Asciichart asciichart(std::vector<std::vector<double>>{BER});
+        std::cout << asciichart.type(ascii::Asciichart::LINE).height(10).max(0).min(-5).Plot();
+        #ifdef DEBUG
         noise = noise/transmits;
-
-        BER.push_back((float)errors/transmits);
-
-        std::cout << '\t' << SNR.back() << '\t' << BER.back() << '\t' << errors << '/' << transmits << '\t' <<  noise << std::endl;
+        std::cout << SNR.back() << '\t' << BER.back() << '\t' << errors << '/' << transmits << '\t' <<  -10*log10(noise) << std::endl;
+        #else
+        std::cout << "\nSNR:"<< snr << "\tBER:" << (double)errors/transmits << std::endl;
+        #endif
     }
-    return 16;
+
+    return 0;
 }
