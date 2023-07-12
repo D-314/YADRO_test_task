@@ -2,12 +2,10 @@ CC	= g++
 CFLAGS	= -std=c++11 -Wall
 LDFLAGS	=
 
-LIBS	= QAM_lib asciichart
+LIBS	= ../QAM_lib asciichart/include
 
 SOURCES	= main.cpp \
-			$(foreach lib,$(LIBS),$(shell find ../$(lib) -type f -name "*.cpp"))
-# Пути к заголовочным файлам
-HEADERS	= $(shell find ../$(LIBS) -type f -name "*.h" -exec dirname {} \; | sort | uniq)
+			$(foreach lib,$(LIBS),$(shell find $(lib) -type f -name "*.cpp"))
 
 SRCDIR	= .
 BINDIR	= .
@@ -16,16 +14,19 @@ BINDIR	= .
 TARGET	= YADRO_test_task
 
 $(TARGET): $(SOURCES) $(HEADERS)
-	$(CC) $(CFLAGS) $(LDFLAGS) -I$(HEADERS) -o $(BINDIR)/$(TARGET) $(SOURCES)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(BINDIR)/$(TARGET) $(SOURCES)
 	chmod +x $(BINDIR)/$(TARGET)
 	
-.PHONY: clean all debug echo_files
+.PHONY: clean all debug echo_files run
+
+run:
+	 ./$(TARGET)
 
 echo_files:
 	@echo $(SOURCES) $(HEADERS)
 
 debug:
-	$(CC) $(CFLAGS) $(LDFLAGS)  -I$(HEADERS) -o $(BINDIR)/$(TARGET) $(SOURCES) -DDEBUG
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(BINDIR)/$(TARGET) $(SOURCES) -DDEBUG
 	chmod +x $(BINDIR)/$(TARGET)
 
 all: $(TARGET)
