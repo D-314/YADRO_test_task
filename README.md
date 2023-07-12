@@ -14,7 +14,7 @@
 
 Для ос Linux:
 ```
-git clone https://github.com/D-314/YADRO_test_task.git
+git clone https://github.com/D-314/YADRO_test_task.git --recurse-submodules
 cd YADRO_test_task/without_GUI/
 sudo make
 ./YADRO_test_task
