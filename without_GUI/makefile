@@ -1,27 +1,34 @@
-CC = g++
-CFLAGS = -std=c++11 -Wall
-LDFLAGS =
+CC	= g++
+CFLAGS	= -std=c++11 -Wall
+LDFLAGS	=
 
-SRCDIR = .
-INCDIR = ../QAM_lib/inc
-LIBDIR = ../QAM_lib
-BINDIR = .
+LIBS	= QAM_lib asciichart
 
-SOURCES = main.cpp \
-          $(LIBDIR)/src/awgn.cpp \
-          $(LIBDIR)/src/qamdemodulator.cpp \
-          $(LIBDIR)/src/qammodulator.cpp
+SOURCES	= main.cpp \
+			$(foreach lib,$(LIBS),$(shell find ../$(lib) -type f -name "*.cpp"))
+# Пути к заголовочным файлам
+HEADERS	= $(shell find ../$(LIBS) -type f -name "*.h" -exec dirname {} \; | sort | uniq)
 
-HEADERS = $(INCDIR)/awgn.h \
-          $(INCDIR)/QAM.h \
-          $(INCDIR)/qamdemodulator.h \
-          $(INCDIR)/qammodulator.h
+SRCDIR	= .
+BINDIR	= .
 
-TARGET = YADRO_test_task
+
+TARGET	= YADRO_test_task
 
 $(TARGET): $(SOURCES) $(HEADERS)
-	$(CC) $(CFLAGS) $(LDFLAGS) -I$(INCDIR) -L$(LIBDIR) -o $(BINDIR)/$(TARGET) $(SOURCES)
+	$(CC) $(CFLAGS) $(LDFLAGS) -I$(HEADERS) -o $(BINDIR)/$(TARGET) $(SOURCES)
 	chmod +x $(BINDIR)/$(TARGET)
+	
+.PHONY: clean all debug echo_files
+
+echo_files:
+	@echo $(SOURCES) $(HEADERS)
+
+debug:
+	$(CC) $(CFLAGS) $(LDFLAGS)  -I$(HEADERS) -o $(BINDIR)/$(TARGET) $(SOURCES) -DDEBUG
+	chmod +x $(BINDIR)/$(TARGET)
+
+all: $(TARGET)
 
 clean:
 	rm -f $(BINDIR)/$(TARGET)

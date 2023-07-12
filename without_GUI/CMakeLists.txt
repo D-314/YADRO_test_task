@@ -5,6 +5,7 @@ project(YADRO_test_task)
 set(SOURCES
     main.cpp
     ../QAM_lib/src/awgn.cpp
+	../QAM_lib/src/QAM.cpp
     ../QAM_lib/src/qamdemodulator.cpp
     ../QAM_lib/src/qammodulator.cpp
 )
@@ -18,13 +19,13 @@ set(HEADERS
 )
 
 # Добавляем исполняемый файл проекта
-add_executable(YourProjectName ${SOURCES} ${HEADERS})
+add_executable(YADRO_test_task ${SOURCES} ${HEADERS})
 
 # Указываем путь к заголовочным файлам библиотеки QAM_lib
-target_include_directories(YourProjectName PRIVATE ../QAM_lib/inc)
+target_include_directories(YADRO_test_task PRIVATE ../QAM_lib/inc)
 
 # Указываем путь к исходным файлам библиотеки QAM_lib
 add_subdirectory(../QAM_lib)
 
 # Линкуем проект с библиотекой QAM_lib
-target_link_libraries(YourProjectName QAM_lib)
+target_link_libraries(YADRO_test_task QAM_lib)
